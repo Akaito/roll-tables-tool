@@ -12,8 +12,9 @@
 <textarea id="json_text" name="JSON text">
 {
     "version": 1,
-    "tables": {
-        "Treasure": {
+    "tables": [
+        {
+            "name": "Treasure",
             "dice_count": 1,
             "dice_size": 20,
             "entries": [
@@ -21,7 +22,7 @@
                 {"min": 16, "max": 20, "text": "5 gp"}
             ]
         }
-    }
+    ]
 }
 </textarea>
 <a href="#" id="load_json">Load JSON</a>
@@ -38,35 +39,53 @@
 <script type="text/javascript">
 function load_json() {
     var jsn = JSON.parse(document.getElementById('json_text').value);
-    if (jsn.version != 1) {
-        console.error('Unrecognized or missing version for JSON data.');
-        return;
-    }
+    rebuild(jsn);
     console.log('JSON:', jsn);
     return jsn;
 }
 
-function rebuild() {
+function rebuild(jsn) {
+    if (jsn.version != 1) {
+        console.error('Unrecognized or missing version for JSON data.');
+        return;
+    }
+
     var root = $('<div>', {id:'dynamic_contents'});
 
-    root.append('<p>hi!</p>');
+    var tables_elements = build_tables_elements(jsn);
+    if (tables_elements)
+        root.append(tables_elements);
 
     $('#dynamic_contents').replaceWith(root);
     // future:
     //document.getElementById('json_details').open = false;
 }
 
+function build_tables_elements(jsn) {
+    for (const table_object of jsn.tables) {
+        var roll_table = new RollTable(table_object);
+        console.log(roll_table.name);
+        console.log(roll_table.roll_formula);
+    }
+}
+
+class RollTable {
+    constructor(jsn) {
+        this.jsn = jsn;
+    }
+
+    get name() { return this.jsn.name; }
+    get roll_formula() { return `${this.jsn.dice_count}d${this.jsn.dice_size}`; }
+}
+
 document
     .getElementById('load_json')
     .addEventListener('click', (_event) => {
         var jsn = load_json();
-        rebuild();
     });
 
-window.addEventListener('load', (_event) => {
-//$(document).ready(() => {
+$(window).ready(() => {
     load_json();
-    rebuild();
 });
 </script>
 </body>

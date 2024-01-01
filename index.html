@@ -67,6 +67,11 @@ function rebuild(jsn) {
     //document.getElementById('json_details').open = false;
 }
 
+function build_licenses_elements(jsn) {
+    for (const license_strings of jsn.licenses) {
+    }
+}
+
 function build_tables_elements(jsn) {
     for (const table_object of jsn.tables) {
         var roll_table = new RollTable(table_object);

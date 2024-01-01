@@ -1,3 +1,5 @@
 *.vim
 *.pyc
 .*~
+remote-files/data/*.json
+

@@ -1,5 +1,6 @@
 *.vim
 *.pyc
 .*~
+.*.swp
 remote-files/data/*.json
 

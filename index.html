@@ -166,7 +166,7 @@ document
     });
 
 $(window).ready(() => {
-    load_json();
+    //load_json();
 });
 
 // Load remote manifest
@@ -176,15 +176,31 @@ $('#load_manifest').on('click', () => {
         manifest_path = manifest_path.value;
     else
         manifest_path = manifest_path.placeholder;
-    //var manifest = $.get(manifest_path);
-    var manifest = $.ajax({
-            dataType: 'json',
+    $.getJSON({
             url: manifest_path,
             success: (data, textStatus, jqXHR) => {
-                console.log('success', data, textStatus, jqXHR);
+                //console.log('manifest success', data, textStatus, jqXHR);
+                var content = '';
+                data?.paths?.forEach((path, index) => {
+                    var filename = path.substring(path.lastIndexOf('/') + 1);
+                    content += `<li><a href="#" class="load_manifest" data-path="${path}">${filename}</a></li>`;
+                });
+                $('#manifests').replaceWith($(`<ul id="manifests">${content}</ul>`));
             },
         });
-    console.log(manifest);
+});
+
+$(document).delegate('a.load_manifest', 'click', (event) => {
+    event.stopPropagation();
+    var json_path = event.currentTarget.dataset['path'];
+    $.getJSON({
+        url: json_path,
+        success: (data, textStatus, jqXHR) => {
+            console.log('json data success', data, textStatus, jqXHR);
+            $('#json_text').val(JSON.stringify(data));
+            //load_json();
+        },
+    });
 });
 
 // Make roll tables rollable.
@@ -198,7 +214,7 @@ $(document).delegate('a.roll_roll_table', 'click', (event) => {
 
     var result = roll_table.roll();
     var entry = roll_table.entry_for(result);
-    var msg = `${roll_table.name} <span title="${roll_table.roll_formula} -- ${result.rolls}">🎲${result.total}</span> = ${entry.html}`;
+    var msg = `${roll_table.name} <span title="${roll_table.roll_formula} --&gt; ${result.rolls}">🎲${result.total}</span> = ${entry.html}`;
     console.log(msg);
     //alert(msg);
     $('#roll_results').append($(`<li>${msg}</li>`));

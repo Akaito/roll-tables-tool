@@ -3,6 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <title>Rolltables</title>
+<style>
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+table caption {
+    font-weight: bold;
+    text-align: center;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #ebebeb;
+}
+</style>
 </head>
 
 
@@ -12,14 +27,16 @@
 <textarea id="json_text" name="JSON text">
 {
     "version": 1,
-    "tables": [
+    "licenses": ["test, MIT license"],
+    "roll_tables": [
         {
+            "category": "test",
             "name": "Treasure",
-            "dice_count": 1,
-            "dice_size": 20,
+            "dice_formula": "1d20",
+            "headers": ["d20", "stuff"],
             "entries": [
-                {"min": 1, "max": 15, "text": "2 sp"},
-                {"min": 16, "max": 20, "text": "5 gp"}
+                {"min": 1, "max": 15, "html": "2 sp"},
+                {"min": 16, "max": 20, "html": "5 gp"}
             ]
         }
     ]
@@ -43,6 +60,9 @@
 </script>
 
 <script type="text/javascript">
+var global_data = new Object();
+var loaded_data = new Object();
+
 function load_json() {
     var jsn = JSON.parse(document.getElementById('json_text').value);
     rebuild(jsn);
@@ -56,30 +76,57 @@ function rebuild(jsn) {
         return;
     }
 
+    loaded_data = new Object();
     var root = $('<div>', {id:'dynamic_contents'});
 
-    var tables_elements = build_tables_elements(jsn);
-    if (tables_elements)
-        root.append(tables_elements);
+    var licences_elements = build_licenses_elements(jsn);
+    if (licences_elements)
+        root.append(licences_elements);
 
+    var roll_tables_elements = build_roll_tables_elements(jsn);
+    if (roll_tables_elements)
+        root.append(roll_tables_elements);
+
+    root.append($('<ul>', {id: 'roll_results'}));
+
+    global_data = structuredClone(loaded_data);
+    console.log(global_data, loaded_data);
+    loaded_data = new Object();
     $('#dynamic_contents').replaceWith(root);
     // future:
     //document.getElementById('json_details').open = false;
 }
 
 function build_licenses_elements(jsn) {
-    for (const license_strings of jsn.licenses) {
+    var result = [];
+    for (const license_string of jsn.licenses) {
+        result.push($(`<p>${license_string}</p>`));
     }
+    return result;
 }
 
-function build_tables_elements(jsn) {
-    for (const table_object of jsn.tables) {
-        var roll_table = new RollTable(table_object);
-        console.log(roll_table.name);
-        console.log(roll_table.roll_formula);
-        var result = roll_table.roll();
-        alert(`Rolled ${roll_table.roll_formula} on the ${roll_table.name} table.  Got a ${result}.  Result: ${roll_table.entry_for(result).text}`);
+function build_roll_tables_elements(jsn) {
+    loaded_data.roll_tables = [];
+    var result = [];
+    for (const roll_table_object of jsn?.roll_tables || []) {
+        var roll_table = new RollTable(roll_table_object);
+        loaded_data.roll_tables.push(roll_table);
+
+        var htm = `<table title="${roll_table.name}"><thead><caption><a href="#" class="roll_roll_table" data-roll-table-index="${result.length}">🎲&nbsp;${roll_table.name}</a></caption><tr>`;
+        for (const header of roll_table.headers) {
+            htm += `<th>${header}</th>`;
+        }
+        htm += '</tr></thead><tbody>';
+        for (const entry of roll_table.entries) {
+            var roll_result = `${entry.min}`;
+            if (entry?.max != undefined)
+                roll_result += ` - ${entry.max}`;
+            htm += `<tr><td>${roll_result}</td><td>${entry.html}</td></tr>`;
+        }
+        htm += '</tbody></table>';
+        result.push($(htm));
     }
+    return result;
 }
 
 class RollTable {
@@ -87,8 +134,11 @@ class RollTable {
         this.jsn = jsn;
     }
 
+    get category() { return this.jsn.category; }
     get name() { return this.jsn.name; }
-    get roll_formula() { return `${this.jsn.dice_count}d${this.jsn.dice_size}`; }
+    get roll_formula() { return this.jsn.dice_formula; }
+    get headers() { return this.jsn.headers; }
+    get entries() { return this.jsn.entries; }
 
     roll() {
         var result = droll.roll(this.roll_formula);
@@ -113,6 +163,23 @@ document
 
 $(window).ready(() => {
     load_json();
+});
+
+// Make roll tables rollable.
+$(document).delegate('a.roll_roll_table', 'click', (event) => {
+    event.stopPropagation();
+    //console.log(event);
+    var roll_table_index = event.currentTarget.dataset['rollTableIndex'];
+    // `new RollTable` is a workaround due to the structuredClone() losing class info.
+    var roll_table = new RollTable(global_data.roll_tables[roll_table_index].jsn);
+    console.log(roll_table);
+
+    var result = roll_table.roll();
+    var entry = roll_table.entry_for(result);
+    var msg = `${roll_table.name} <span title="${roll_table.roll_formula} -- ${result.rolls}">🎲${result.total}</span> = ${entry.html}`;
+    console.log(msg);
+    //alert(msg);
+    $('#roll_results').append($(`<li>${msg}</li>`));
 });
 </script>
 </body>

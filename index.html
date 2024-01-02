@@ -123,7 +123,7 @@ function build_roll_tables_elements(jsn) {
         htm += '</tr></thead><tbody>';
         for (const entry of roll_table.entries) {
             var roll_result = `${entry.min}`;
-            if (entry?.max != undefined)
+            if (entry?.max != undefined && entry?.max != entry.min)
                 roll_result += ` - ${entry.max}`;
             htm += `<tr><td>${roll_result}</td><td>${entry.html}</td></tr>`;
         }
@@ -214,7 +214,7 @@ $(document).delegate('a.roll_roll_table', 'click', (event) => {
 
     var result = roll_table.roll();
     var entry = roll_table.entry_for(result);
-    var msg = `${roll_table.name} <span title="${roll_table.roll_formula} --&gt; ${result.rolls}">🎲${result.total}</span> = ${entry.html}`;
+    var msg = `${roll_table.name} <span title="${roll_table.roll_formula} --&gt; ${result.rolls}">🎲${result.total}</span><br/>${entry.html}`;
     console.log(msg);
     //alert(msg);
     $('#roll_results').append($(`<li>${msg}</li>`));

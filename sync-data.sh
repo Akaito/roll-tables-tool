@@ -6,6 +6,6 @@ VERSION=v1
 
 # Requires AWS policy GuidBucketAuthor584a14fc
 
-aws s3 sync ./remote-files s3://${BUCKET}/${BUCKET_PATH}/${VERSION}/
+aws s3 sync --exclude='*.swp' ./remote-files s3://${BUCKET}/${BUCKET_PATH}/${VERSION}/
 aws s3 sync s3://${BUCKET}/${BUCKET_PATH}/${VERSION}/ ./remote-files
 

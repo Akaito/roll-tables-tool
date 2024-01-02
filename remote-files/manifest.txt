@@ -1,1 +1,1 @@
-https://584a14fc-092d-4e73-bf45-fa558a205603.s3.amazonaws.com/a526d360-e0b7-4a2e-9f12-ee38af48742c/roll-table-tools/data/shadowdark-quickstart.json
+https://584a14fc-092d-4e73-bf45-fa558a205603.s3.amazonaws.com/a526d360-e0b7-4a2e-9f12-ee38af48742c/roll-table-tools/v1/data/shadowdark-quickstart.json

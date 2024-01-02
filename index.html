@@ -178,7 +178,7 @@ $('#load_manifest').on('click', () => {
         manifest_path = manifest_path.placeholder;
     //var manifest = $.get(manifest_path);
     var manifest = $.ajax({
-            dataType: 'jsonp',
+            dataType: 'json',
             url: manifest_path,
             success: (data, textStatus, jqXHR) => {
                 console.log('success', data, textStatus, request);

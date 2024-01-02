@@ -24,7 +24,7 @@ table tbody tr:nth-child(even) {
 <body>
 <details id="json_detials">
 <summary>JSON definitions...</summary>
-<input type="text" id="manifest_path" placeholder="https://584a14fc-092d-4e73-bf45-fa558a205603.s3.amazonaws.com/a526d360-e0b7-4a2e-9f12-ee38af48742c/v1/roll-table-tools/manifest.txt"/>
+<input type="text" id="manifest_path" placeholder="https://584a14fc-092d-4e73-bf45-fa558a205603.s3.amazonaws.com/a526d360-e0b7-4a2e-9f12-ee38af48742c/v1/roll-table-tools/manifest.json"/>
 <a href="#" id="load_manifest">Load Manifest</a>
 <ul id="manifests"></ul>
 <p>--</p>
@@ -176,15 +176,13 @@ $('#load_manifest').on('click', () => {
         manifest_path = manifest_path.value;
     else
         manifest_path = manifest_path.placeholder;
-    var manifest = $.get(manifest_path, (_result) => {
-            // success
-        })
-        .done(() => {
-            // success again?
-        })
-        .fail((jqXHR, text_status, error_thrown) => {
-            console.log(jqXHR, text_status, error_thrown);
-            alert(text_status);
+    //var manifest = $.get(manifest_path);
+    var manifest = $.ajax({
+            dataType: 'jsonp',
+            url: manifest_path,
+            success: (data, textStatus, jqXHR) => {
+                console.log('success', data, textStatus, request);
+            },
         });
     console.log(manifest);
 });

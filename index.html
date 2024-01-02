@@ -17,6 +17,14 @@ table caption {
 table tbody tr:nth-child(even) {
     background-color: #ebebeb;
 }
+
+#manifest_path {
+    width: 80%;
+}
+
+#json_text {
+    width: 80%;
+}
 </style>
 </head>
 
@@ -24,11 +32,13 @@ table tbody tr:nth-child(even) {
 <body>
 <details id="json_detials">
 <summary>JSON definitions...</summary>
-<input type="text" id="manifest_path" placeholder="https://584a14fc-092d-4e73-bf45-fa558a205603.s3.amazonaws.com/a526d360-e0b7-4a2e-9f12-ee38af48742c/roll-table-tools/v1/manifest.json"/>
-<a href="#" id="load_manifest">Load Manifest</a>
+<span>
+    <a href="#" id="load_manifest">Load Manifest:</a>&nbsp;<input type="text" id="manifest_path" placeholder="https://584a14fc-092d-4e73-bf45-fa558a205603.s3.amazonaws.com/a526d360-e0b7-4a2e-9f12-ee38af48742c/roll-table-tools/v1/manifest.json" value="https://584a14fc-092d-4e73-bf45-fa558a205603.s3.amazonaws.com/a526d360-e0b7-4a2e-9f12-ee38af48742c/roll-table-tools/v1/manifest.json"/>
+</span>
 <ul id="manifests"></ul>
-<p>--</p>
-<textarea id="json_text" name="JSON text">
+<div>--</div>
+<a href="#" id="load_json">Load JSON:</a>
+<textarea id="json_text" name="JSON text" rows="6">
 {
     "version": 1,
     "licenses": ["test, MIT license"],
@@ -46,7 +56,6 @@ table tbody tr:nth-child(even) {
     ]
 }
 </textarea>
-<a href="#" id="load_json">Load JSON</a>
 </details>
 
 <div id="dynamic_contents"></div>

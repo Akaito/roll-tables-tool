@@ -2,5 +2,7 @@
 *.pyc
 .*~
 .*.swp
-remote-files/data/*.json
+remote-files/**
+!remote-files/manifest.json
+!remote-files/data/*.json
 
